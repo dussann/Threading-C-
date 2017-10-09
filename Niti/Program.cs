@@ -9,13 +9,32 @@ namespace Niti
 {
     class Program
     {
-        static object lockObject = new object();
+        static AutoResetEvent objAuto = new AutoResetEvent(false);
 
         public static void text()
+        {           
+            Console.WriteLine("Thread runs");            
+        }
+
+        static void text1()
         {
-            lock (lockObject)
+            objAuto.WaitOne();
+            Console.WriteLine("start");
+            Console.WriteLine("end");
+
+            //objAuto.Set();
+
+        }
+
+
+        static void init(int n)
+        {
+            for (int i = 0; i < n; i++)
             {
-                Console.WriteLine("Thread runs");
+                Thread t = new Thread(text1);
+                t.Start();
+                Console.ReadKey();
+                objAuto.Set();
             }
         }
 
@@ -57,7 +76,9 @@ namespace Niti
             Console.WriteLine("Insert how many thrads do you want?");
             int number = Convert.ToInt32(Console.ReadLine());
 
-            createThreadsSequential(number);
+            // createThreadsSequential(number);
+
+            init(number);
             Console.ReadKey();
         }
     }
