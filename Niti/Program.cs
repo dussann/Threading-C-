@@ -26,7 +26,6 @@ namespace Niti
 
         }
 
-
         static void init(int n)
         {
             for (int i = 0; i < n; i++)
@@ -47,6 +46,23 @@ namespace Niti
                 t.Start();
                 Console.WriteLine("Thread " + t.Name + " is running: " + t.IsAlive);
                 t.Join();
+                Console.WriteLine("Thread " + t.Name + " is running: " + t.IsAlive);
+                Console.WriteLine();
+            }
+        }
+
+        public static void LoopSequential(int n)
+        {
+            var a = false;
+            while(a==false)
+            {
+                Random r = new Random();
+                int br = r.Next(2, 5);
+                Thread t = new Thread(text);
+                t.Name = br.ToString();
+                t.Start();                
+                Console.WriteLine("Thread " + t.Name + " is running: " + t.IsAlive);
+                Thread.Sleep(br * 1000);
                 Console.WriteLine("Thread " + t.Name + " is running: " + t.IsAlive);
                 Console.WriteLine();
             }
@@ -76,9 +92,10 @@ namespace Niti
             Console.WriteLine("Insert how many thrads do you want?");
             int number = Convert.ToInt32(Console.ReadLine());
 
-            // createThreadsSequential(number);
+            //createThreadsSequential(number);
 
-            init(number);
+            //init(number);
+            LoopSequential(number);
             Console.ReadKey();
         }
     }
