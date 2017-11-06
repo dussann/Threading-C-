@@ -10,92 +10,116 @@ namespace Niti
     class Program
     {
         static AutoResetEvent objAuto = new AutoResetEvent(false);
+        static Thread[] nizTredova;
 
-        public static void text()
-        {           
-            Console.WriteLine("Thread runs");            
+        private static void textSequential()
+        {            
+            Console.WriteLine("Thread runs++++");  
+            Console.WriteLine("Thread ends----");           
         }
 
-        static void text1()
+        private static void textSim()
+        {
+            Random rn = new Random();
+            int n = rn.Next(0, 6);           
+            Console.WriteLine("Running "+n+" seconds");           
+            Console.WriteLine("Thread runs++++");
+            Thread.Sleep(n * 1000);          
+            Console.WriteLine("Thread ends----");
+
+        }
+
+        private static void textAutoReset()
         {
             objAuto.WaitOne();
             Console.WriteLine("start");
             Console.WriteLine("end");
-
             //objAuto.Set();
-
         }
-
-        static void init(int n)
+        //prvi na drugi nacin
+        static void AutoReset()
         {
-            for (int i = 0; i < n; i++)
+            Console.WriteLine("Insert how many thrads do you want sequential (with 'AutoResetEvent')?");
+            int number = Convert.ToInt32(Console.ReadLine());
+
+            for (int i = 0; i < number; i++)
             {
-                Thread t = new Thread(text1);
-                t.Start();
+                Thread t = new Thread(textAutoReset);
+                t.Start();                
                 Console.ReadKey();
                 objAuto.Set();
             }
-        }
 
-        public static void createThreadsSequential(int n)
-        {
-            for (int i = 1; i <= n; i++)
-            {
-                Thread t = new Thread(text);
-                t.Name = i.ToString();
-                t.Start();
-                Console.WriteLine("Thread " + t.Name + " is running: " + t.IsAlive);
-                t.Join();
-                Console.WriteLine("Thread " + t.Name + " is running: " + t.IsAlive);
-                Console.WriteLine();
-            }
         }
-
-        public static void LoopSequential(int n)
+        //prvi
+        public static void CreateThreadsSequential()
         {
-            var a = false;
-            while(a==false)
-            {
-                Random r = new Random();
-                int br = r.Next(2, 5);
-                Thread t = new Thread(text);
-                t.Name = br.ToString();
-                t.Start();                
-                Console.WriteLine("Thread " + t.Name + " is running: " + t.IsAlive);
-                Thread.Sleep(br * 1000);
-                Console.WriteLine("Thread " + t.Name + " is running: " + t.IsAlive);
-                Console.WriteLine();
-            }
-        }
-
-        public static void createThreads(int n)
-        {
-            for (int i = 1; i <= n; i++)
-            {
-                Thread t = new Thread(text);
-                t.Name = i.ToString();
-                t.Start();
-                Console.WriteLine("Thread " + t.Name + " is running: " + t.IsAlive);
-                //t.Join();
-                Console.WriteLine("Thread " + t.Name + " is running: " + t.IsAlive);
-                if (t.IsAlive)
-                {
-                    Console.WriteLine("ziv je");
-                }
-                Console.WriteLine();
-            }
-        }
-        static void Main(string[] args)
-        {
-
-            
-            Console.WriteLine("Insert how many thrads do you want?");
+            Console.WriteLine("Insert how many thrads do you want to run sequential?");
             int number = Convert.ToInt32(Console.ReadLine());
 
-            //createThreadsSequential(number);
+            for (int i = 1; i <= number; i++)
+            {
+                Thread t = new Thread(textSequential);
+                
+                t.Name = i.ToString();
+                t.Start();
+                Console.WriteLine("Thread " + t.Name + " is running: " + t.IsAlive);
+                Thread.Sleep(200);
+                Console.WriteLine("Thread " + t.Name + " is running: " + t.IsAlive);
+                Console.WriteLine();
+            }
+           
+        }
+        //drugi
+        public static void CreateThreadsSim()
+        {
+            Console.WriteLine("Insert how many thrads do you want to run simultaneously?");
 
-            //init(number);
-            LoopSequential(number);
+            int number = Convert.ToInt32(Console.ReadLine());
+            nizTredova = new Thread[number];
+
+            for (int j = 0; j < number; j++)
+            {
+                nizTredova[j] = new Thread(textSim);
+                nizTredova[j].Start();
+            }
+            Thread checkThread = new Thread(Check);
+            checkThread.Start();
+
+
+        }
+
+        private static void Check()
+        {
+            bool check = true;
+            while (check)
+            {
+                Thread.Sleep(2000);
+                for (int j = 0; j < nizTredova.Length; j++)
+                {
+                    if (nizTredova[j].IsAlive)
+                    {                       
+                        break;
+                    }
+                    if (!nizTredova[nizTredova.Length - 1].IsAlive)
+                        check = false;                    
+                }
+            }
+            Console.BackgroundColor = ConsoleColor.DarkBlue;
+            Console.WriteLine("All threads are finished");
+        }
+        
+        
+        static void Main(string[] args)
+        {
+            //prvi zad
+            CreateThreadsSequential();
+            // prvi zad drugi nacin
+            AutoReset();
+
+            //drugi
+            CreateThreadsSim();
+
             Console.ReadKey();
         }
     }
